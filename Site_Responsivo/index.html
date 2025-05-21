@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Madrid CF</title>
+    <link rel="icon" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" type="image/x-icon">
+    <!-- Inclusão de Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="img/real-madrid.png" type="image/x-icon">
+</head>
+
+<body>
+    <!-- Cabeçalho principal com título e descrição -->
+    <header>
+        <h1>Real Madrid Club de Fútbol</h1>
+        <p>O clube mais vitorioso da história do futebol europeu</p>
+        
+        <!-- Switch para alternar entre modo claro e escuro -->
+        <div class="theme-switch-wrapper">
+            <label class="theme-switch" for="checkbox">
+                <input type="checkbox" id="checkbox" />
+                <div class="slider"></div>
+            </label>
+            <em><i class="fas fa-moon"></i></em>
+        </div>
+    </header>
+    
+    <!-- Barra de navegação sticky -->
+    <nav id="mainNav">
+        <!-- Ícone do menu hambúrguer para dispositivos móveis -->
+        <div class="menu-icon" onclick="toggleMenu()">
+            <i class="fas fa-bars"></i>
+        </div>
+        
+        <!-- Links da navegação -->
+        <div class="nav-links">
+            <a href="#historia">História</a>
+            <a href="#titulos">Títulos</a>
+            <a href="#elenco">Elenco Atual</a>
+            <a href="#estadio">Estádio</a>
+        </div>
+    </nav>
+    
+    <!-- Conteúdo principal -->
+    <div class="content">
+        <!-- Barra lateral com informações do clube -->
+        <aside>
+            <h2>Sobre o Clube</h2>
+            <p>Escudo do Real Madrid:</p>
+            <div class="real-img">
+                <img src="/img/Real-Madrid-Logo.png" alt="Escudo do Real Madrid">
+            </div>
+            <p>O Real Madrid Club de Fútbol, conhecido simplesmente como Real Madrid, é um clube de futebol espanhol sediado em Madrid. Fundado em 6 de março de 1902, é um dos clubes mais ricos, valiosos e populares do mundo.</p>
+            
+            <h2>Informações Rápidas</h2>
+            <p><strong>Fundação:</strong> 6 de março de 1902</p>
+            <p><strong>Estádio:</strong> Santiago Bernabéu</p>
+            <p><strong>Presidente:</strong> Florentino Pérez</p>
+            <p><strong>Cores:</strong> Branco e Dourado</p>
+            
+            <h2>Rivalidades</h2>
+            <p>O principal rival do Real Madrid é o FC Barcelona, com quem disputa o famoso "El Clásico", considerado um dos maiores clássicos do futebol mundial.</p>
+            <div class="real-img">
+                <img src="img/el-clasico.jpg" alt="Cena de um El Clásico entre Real Madrid e Barcelona">
+            </div>
+        </aside>
+        
+        <!-- Seção principal com artigos sobre o clube -->
+        <main>
+            <article id="historia">
+                <h2>A GLORIOSA HISTÓRIA DO REAL MADRID</h2>
+                <p class="date">Atualizado em maio de 2025</p>
+                <div class="real-img">
+                    <img src="/img/real-50's.jpg" alt="Histórica equipe do Real Madrid dos anos 50 com Di Stéfano">
+                </div>
+                
+                <p>O Real Madrid foi fundado em 1902 como Madrid Football Club. Em 1920, o clube recebeu o título de "Real" (Real significa "Real" em espanhol) pelo Rei Alfonso XIII, adicionando a coroa real ao seu emblema.</p>
+                
+                <p>A verdadeira ascensão internacional do clube começou na década de 1950, com a chegada do lendário Alfredo Di Stéfano. O Real Madrid conquistou as cinco primeiras edições da Copa dos Campeões Europeus (atual UEFA Champions League) de 1956 a 1960. Essa equipe, que incluía estrelas como Ferenc Puskás, Raymond Kopa e Francisco Gento, é frequentemente considerada um dos maiores times de todos os tempos.</p>
+                
+                <p>Nas décadas seguintes, o clube continuou a atrair as maiores estrelas do mundo, como Hugo Sánchez nos anos 80, e estabeleceu a política de contratação dos chamados "Galácticos" nos anos 2000, com jogadores como Luís Figo, Zinedine Zidane, Ronaldo Nazário, David Beckham e, mais tarde, Cristiano Ronaldo e Karim Benzema.</p>
+                
+                <p>O Real Madrid é conhecido por sua filosofia de contratar os melhores jogadores do mundo e por seu compromisso com o futebol ofensivo. O clube detém o recorde de títulos da Liga dos Campeões da UEFA, consolidando sua posição como o clube mais bem-sucedido da história do futebol europeu.</p>
+            </article>
+            
+            <article id="titulos">
+                <h2>CONQUISTAS E TÍTULOS</h2>
+                <p class="date">Até outubro de 2024</p>
+                <div class="real-img">
+                    <img src="img/trofeus.webp" alt="Troféus da Champions League conquistados pelo Real Madrid">
+                </div>
+                
+                <p>O Real Madrid é o clube com mais títulos da Champions League/Copa dos Campeões Europeus na história, tendo conquistado a competição 15 vezes. O clube também conta com inúmeros títulos nacionais e internacionais:</p>
+                
+                <p><strong>Principais títulos internacionais:</strong></p>
+                <ul>
+                    <li>15 UEFA Champions League/Copa dos Campeões Europeus</li>
+                    <li>5 Mundiais de Clubes da FIFA / Copa Intercontinental</li>
+                    <li>5 Supercopas da UEFA</li>
+                </ul>
+                
+                <p><strong>Principais títulos nacionais:</strong></p>
+                <ul>
+                    <li>36 Títulos da La Liga (Campeonato Espanhol)</li>
+                    <li>20 Copas do Rei</li>
+                    <li>13 Supercopas da Espanha</li>
+                </ul>
+                
+                <p>Esta impressionante coleção de troféus faz do Real Madrid um dos clubes mais vitoriosos e prestigiados do mundo. O clube madrilenho é conhecido por seu desempenho excepcional nas competições europeias, especialmente na Champions League, onde costuma se sobressair mesmo em temporadas menos dominantes no cenário doméstico.</p>
+            </article>
+            
+            <article id="elenco">
+                <h2>ELENCO ATUAL E ESTRELAS</h2>
+                <p class="date">Temporada 2024/2025</p>
+                <div class="real-img">
+                    <img src="img/elenco.webp" alt="Jogadores do elenco atual do Real Madrid">
+                </div>
+                
+                <p>O Real Madrid continua sua tradição de reunir alguns dos melhores jogadores do mundo. O elenco atual é uma mistura de estrelas estabelecidas e jovens talentos promissores.</p>
+                
+                <p>Entre os principais nomes do atual elenco estão Vinícius Júnior, um dos melhores atacantes do mundo, e o meio-campista inglês Jude Bellingham, que se tornou uma sensação imediata após sua chegada ao clube. O jovem atacante Kylian Mbappé, sonho antigo da torcida madridista, finalmente se juntou ao clube em 2024.</p>
+                
+                <p>O brasileiro Rodrygo também continua sendo uma peça fundamental no ataque madrilenho, enquanto a defesa conta com a solidez de jogadores experientes e jovens promessas.</p>
+                
+                <p>O Real Madrid é conhecido por sua política de contratar os maiores talentos do futebol mundial, mantendo sua posição como um dos destinos mais desejados pelos jogadores de elite.</p>
+            </article>
+            
+            <article id="estadio">
+                <h2>SANTIAGO BERNABÉU: A CASA MERENGUE</h2>
+                <p class="date">Renovado em 2023</p>
+                <div class="real-img">
+                    <img src="img/santiago-bernabeu.jpg" alt="Estádio Santiago Bernabéu renovado">
+                </div>
+                
+                <p>O Estádio Santiago Bernabéu é a casa do Real Madrid desde sua inauguração em 1947. Nomeado em homenagem a Santiago Bernabéu, um dos presidentes mais importantes da história do clube, o estádio é um dos templos mais famosos do futebol mundial.</p>
+                
+                <p>Recentemente, o Santiago Bernabéu passou por uma extensa renovação, tornando-se um dos estádios mais modernos e tecnologicamente avançados do mundo. A reforma incluiu um teto retrátil, uma fachada envolvente de 360 graus e um sistema que permite que o gramado seja armazenado subterraneamente para preservá-lo enquanto outros eventos são realizados no estádio.</p>
+                
+                <p>Com capacidade para aproximadamente 81.000 espectadores, o Bernabéu é famoso por sua atmosfera intimidadora para os times visitantes e por ser palco de algumas das maiores remontadas (viradas) da história do futebol europeu.</p>
+                
+                <p>O estádio também abriga o museu do clube, um dos mais visitados da Espanha, que exibe os inúmeros troféus conquistados pelo Real Madrid ao longo de sua história centenária.</p>
+            </article>
+        </main>
+    </div>
+    
+    <!-- Rodapé com informações adicionais e links de redes sociais -->
+    <footer>
+        <p>© 2025 Real Madrid - Todos os direitos reservados</p>
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+        </div>
+    </footer>
+    
+    <!-- Scripts para funcionalidades interativas -->
+    <script>
+        // Script para alternar entre modo claro e escuro
+        const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
+        const currentTheme = localStorage.getItem('theme');
+
+        // Verificar se há um tema salvo no localStorage
+        if (currentTheme) {
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            
+            if (currentTheme === 'dark') {
+                toggleSwitch.checked = true;
+            }
+        }
+
+        // Função para alternar o tema
+        function switchTheme(e) {
+            if (e.target.checked) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+            }    
+        }
+
+        // Adicionar listener para o switch de tema
+        toggleSwitch.addEventListener('change', switchTheme, false);
+        
+        // Função para alternar o menu hambúrguer em dispositivos móveis
+        function toggleMenu() {
+            var nav = document.getElementById("mainNav");
+            if (nav.className === "") {
+                nav.className = "responsive";
+            } else {
+                nav.className = "";
+            }
+        }
+        
+        // Adicionar evento de hover para o menu em dispositivos móveis
+        const menuIcon = document.querySelector('.menu-icon');
+        const navLinks = document.querySelector('.nav-links');
+        
+        // Verificar se está em um dispositivo móvel
+        if (window.innerWidth <= 768) {
+            menuIcon.addEventListener('mouseover', function() {
+                document.getElementById("mainNav").className = "responsive";
+            });
+        }
+    </script>
+</body>
+</html>
