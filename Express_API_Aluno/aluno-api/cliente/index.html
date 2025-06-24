@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Alunos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .form-section {
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        .btn-danger {
+            background-color: #f44336;
+        }
+        
+        .btn-danger:hover {
+            background-color: #da190b;
+        }
+        
+        .btn-warning {
+            background-color: #ff9800;
+        }
+        
+        .btn-warning:hover {
+            background-color: #f57c00;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .media-ira {
+            background-color: #e8f5e8;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #2e7d32;
+            margin-top: 20px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .actions {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sistema de Gerenciamento de Alunos</h1>
+        
+        <div class="form-section">
+            <h2 id="form-title">Adicionar Novo Aluno</h2>
+            <form id="aluno-form">
+                <div class="form-group">
+                    <label for="nome">Nome:</label>
+                    <input type="text" id="nome" name="nome" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="curso">Curso:</label>
+                    <select id="curso" name="curso" required>
+                        <option value="">Selecione um curso</option>
+                        <option value="Engenharia de Software">Engenharia de Software</option>
+                        <option value="Ciência da Computação">Ciência da Computação</option>
+                        <option value="Sistemas de Informação">Sistemas de Informação</option>
+                        <option value="Engenharia da Computação">Engenharia da Computação</option>
+                        <option value="Redes de Computadores">Redes de Computadores</option>
+                        <option value="Design Digital">Design Digital</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="ira">IRA (0.0 - 10.0):</label>
+                    <input type="number" id="ira" name="ira" min="0" max="10" step="0.1" required>
+                </div>
+                
+                <button type="submit" id="submit-btn">Adicionar Aluno</button>
+                <button type="button" id="cancel-btn" class="btn-warning hidden" onclick="cancelarEdicao()">Cancelar</button>
+            </form>
+        </div>
+        
+        <div class="container">
+            <h2>Lista de Alunos</h2>
+            <div id="media-ira" class="media-ira"></div>
+            <table id="alunos-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Curso</th>
+                        <th>IRA</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="alunos-tbody">
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/alunos';
+        let editandoId = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            carregarAlunos();
+        });
+
+        async function carregarAlunos() {
+            try {
+                const response = await fetch(`${API_URL}/listar`);
+                const alunos = await response.json();
+                
+                exibirAlunos(alunos);
+                calcularMediaIRA(alunos);
+            } catch (error) {
+                console.error('Erro ao carregar alunos:', error);
+                alert('Erro ao carregar a lista de alunos');
+            }
+        }
+
+        function exibirAlunos(alunos) {
+            const tbody = document.getElementById('alunos-tbody');
+            tbody.innerHTML = '';
+
+            alunos.forEach(aluno => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${aluno.id}</td>
+                    <td>${aluno.nome}</td>
+                    <td>${aluno.curso}</td>
+                    <td>${aluno.ira.toFixed(1)}</td>
+                    <td class="actions">
+                        <button class="btn-warning" onclick="editarAluno(${aluno.id})">Editar</button>
+                        <button class="btn-danger" onclick="deletarAluno(${aluno.id})">Deletar</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function calcularMediaIRA(alunos) {
+            if (alunos.length === 0) {
+                document.getElementById('media-ira').innerHTML = 'Nenhum aluno cadastrado';
+                return;
+            }
+
+            const somaIRAs = alunos.reduce((soma, aluno) => soma + aluno.ira, 0);
+            const media = (somaIRAs / alunos.length).toFixed(2);
+            
+            document.getElementById('media-ira').innerHTML = 
+                `Média dos IRAs: ${media} (${alunos.length} aluno${alunos.length > 1 ? 's' : ''})`;
+        }
+
+        document.getElementById('aluno-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const nome = document.getElementById('nome').value;
+            const curso = document.getElementById('curso').value;
+            const ira = document.getElementById('ira').value;
+
+            const alunoData = { nome, curso, ira: parseFloat(ira) };
+
+            try {
+                let response;
+                if (editandoId) {
+                    response = await fetch(`${API_URL}/atualizar/${editandoId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(alunoData)
+                    });
+                } else {
+                    response = await fetch(`${API_URL}/criar`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(alunoData)
+                    });
+                }
+
+                if (response.ok) {
+                    const resultado = await response.json();
+                    console.log('Operação realizada com sucesso:', resultado);
+                    
+                    document.getElementById('aluno-form').reset();
+                    cancelarEdicao();
+                    carregarAlunos();
+                    
+                    alert(editandoId ? 'Aluno atualizado com sucesso!' : 'Aluno criado com sucesso!');
+                } else {
+                    throw new Error('Erro na resposta do servidor');
+                }
+            } catch (error) {
+                console.error('Erro ao salvar aluno:', error);
+                alert('Erro ao salvar aluno');
+            }
+        });
+
+        async function editarAluno(id) {
+            try {
+                const response = await fetch(`${API_URL}/recuperar/${id}`);
+                const aluno = await response.json();
+
+                document.getElementById('nome').value = aluno.nome;
+                document.getElementById('curso').value = aluno.curso;
+                document.getElementById('ira').value = aluno.ira;
+
+                editandoId = id;
+                document.getElementById('form-title').textContent = 'Editar Aluno';
+                document.getElementById('submit-btn').textContent = 'Atualizar Aluno';
+                document.getElementById('cancel-btn').classList.remove('hidden');
+
+            } catch (error) {
+                console.error('Erro ao carregar aluno para edição:', error);
+                alert('Erro ao carregar dados do aluno');
+            }
+        }
+
+        function cancelarEdicao() {
+            editandoId = null;
+            document.getElementById('form-title').textContent = 'Adicionar Novo Aluno';
+            document.getElementById('submit-btn').textContent = 'Adicionar Aluno';
+            document.getElementById('cancel-btn').classList.add('hidden');
+            document.getElementById('aluno-form').reset();
+        }
+
+        async function deletarAluno(id) {
+            if (!confirm('Tem certeza que deseja deletar este aluno?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/deletar/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    const alunoRemovido = await response.json();
+                    console.log('Aluno removido:', alunoRemovido);
+                    carregarAlunos();
+                    alert('Aluno deletado com sucesso!');
+                } else {
+                    throw new Error('Erro ao deletar aluno');
+                }
+            } catch (error) {
+                console.error('Erro ao deletar aluno:', error);
+                alert('Erro ao deletar aluno');
+            }
+        }
+    </script>
+</body>
+</html>
