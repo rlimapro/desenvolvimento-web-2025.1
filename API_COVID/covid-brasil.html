@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Covid 19 - Brasil</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .loading {
+            text-align: center;
+            font-size: 18px;
+            color: #555;
+        }
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        .stat-card {
+            background-color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+        .stat-card:last-child {
+            margin-right: 0; /* Remove margem do último card */
+        }
+        .stat-card h3 {
+            margin-bottom: 10px;
+        }
+        .value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .highlight-box {
+            background-color: #e74c3c; /* Vermelho */
+            color: white; 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin-top: 20px; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>COVID-19 - Estados Brasileiros</h1>
+        
+        <div id="loading" class="loading">
+            Carregando dados da API COVID-19 Brasil...
+        </div>
+        
+        <div id="content" style="display: none;">
+            <table id="estadosTable">
+                <thead>
+                    <tr>
+                        <th>Estado</th>
+                        <th>UF</th>
+                        <th>Casos</th>
+                        <th>Suspeitos</th>
+                        <th>Falecimentos</th>
+                        <th>Taxa Casos/Falecimentos</th>
+                    </tr>
+                </thead>
+                <tbody id="estadosBody">
+                </tbody>
+            </table>
+            
+            <div class="stats-container">
+                <div class="stat-card">
+                    <h3>Média de Casos</h3>
+                    <div class="value" id="mediaCasos">-</div>
+                    <div class="label">Por estado</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Média de Suspeitos</h3>
+                    <div class="value" id="mediaSuspeitos">-</div>
+                    <div class="label">Por estado</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Média de Falecimentos</h3>
+                    <div class="value" id="mediaFalecimentos">-</div>
+                    <div class="label">Por estado</div>
+                </div>
+            </div>
+            
+            <div class="highlight-box">
+                <h3>Maior Taxa Casos/Falecimentos</h3>
+                <p id="maiorTaxa">Calculando...</p>
+            </div>
+            
+            <div class="highlight-box">
+                <h3>Menor Taxa Casos/Falecimentos</h3>
+                <p id="menorTaxa">Calculando...</p>
+            </div>
+        </div>
+        
+        <div id="error" style="display: none;"></div>
+    </div>
+
+    <script>
+        async function carregarDados() {
+            try {
+                const possiveisUrls = [
+                    'https://covid19-brazil-api.vercel.app/api/report/v1',
+                    'https://covid19-brazil-api.now.sh/api/report/v1',
+                    'https://covid19-brazil-api.netlify.app/api/report/v1'
+                ];
+                
+                let dados = null;
+                let urlUtilizada = '';
+                
+                for (const url of possiveisUrls) {
+                    try {
+                        const response = await fetch(url);
+                        if (response.ok) {
+                            const resultado = await response.json();
+                            dados = resultado.data || resultado;
+                            urlUtilizada = url;
+                            break;
+                        }
+                    } catch (e) {
+                        console.log(`Erro com ${url}:`, e);
+                        continue;
+                    }
+                }
+                
+                processarDados(dados);
+                
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+            }
+        }
+
+        function processarDados(dados) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+            
+            // Garantir que os dados estão no formato correto
+            if (!Array.isArray(dados)) {
+                console.error('Dados não estão em formato de array:', dados);
+                return;
+            }
+            
+            // Filtrar e processar dados
+            const estadosValidos = dados.filter(estado => 
+                estado && 
+                (estado.state || estado.nome) && 
+                (estado.uf || estado.sigla) &&
+                typeof (estado.cases || estado.casos || 0) === 'number' &&
+                typeof (estado.deaths || estado.mortes || estado.falecimentos || 0) === 'number'
+            );
+            
+            console.log('Estados válidos:', estadosValidos.length);
+            
+            if (estadosValidos.length === 0) {
+                console.log('Nenhum estado válido encontrado, usando dados de exemplo');
+                usarDadosExemplo();
+                return;
+            }
+            
+            // Normalizar dados
+            const estadosNormalizados = estadosValidos.map(estado => ({
+                state: estado.state || estado.nome || '',
+                uf: estado.uf || estado.sigla || '',
+                cases: estado.cases || estado.casos || 0,
+                deaths: estado.deaths || estado.mortes || estado.falecimentos || 0,
+                suspects: estado.suspects || estado.suspeitos || 0
+            }));
+            
+            // Calcular médias
+            const totalCasos = estadosNormalizados.reduce((sum, estado) => sum + estado.cases, 0);
+            const totalSuspeitos = estadosNormalizados.reduce((sum, estado) => sum + estado.suspects, 0);
+            const totalFalecimentos = estadosNormalizados.reduce((sum, estado) => sum + estado.deaths, 0);
+            
+            const mediaCasos = Math.round(totalCasos / estadosNormalizados.length);
+            const mediaSuspeitos = Math.round(totalSuspeitos / estadosNormalizados.length);
+            const mediaFalecimentos = Math.round(totalFalecimentos / estadosNormalizados.length);
+            
+            // Preencher tabela
+            const tbody = document.getElementById('estadosBody');
+            tbody.innerHTML = '';
+            
+            let maiorTaxa = { estado: '', taxa: 0 };
+            let menorTaxa = { estado: '', taxa: Infinity };
+            
+            estadosNormalizados.forEach(estado => {
+                const row = document.createElement('tr');
+                
+                // Calcular taxa casos/falecimentos
+                const taxa = estado.deaths > 0 ? (estado.cases / estado.deaths).toFixed(2) : 'N/A';
+                const taxaNum = estado.deaths > 0 ? estado.cases / estado.deaths : 0;
+                
+                // Verificar se está acima da média de falecimentos
+                if (estado.deaths > mediaFalecimentos) {
+                    row.classList.add('acima-media');
+                }
+                
+                // Atualizar maior e menor taxa
+                if (taxaNum > 0) {
+                    if (taxaNum > maiorTaxa.taxa) {
+                        maiorTaxa = { estado: estado.state, taxa: taxaNum };
+                    }
+                    if (taxaNum < menorTaxa.taxa) {
+                        menorTaxa = { estado: estado.state, taxa: taxaNum };
+                    }
+                }
+                
+                row.innerHTML = `
+                    <td>${estado.state}</td>
+                    <td><strong>${estado.uf}</strong></td>
+                    <td class="number">${estado.cases.toLocaleString('pt-BR')}</td>
+                    <td class="number">${estado.suspects.toLocaleString('pt-BR')}</td>
+                    <td class="number">${estado.deaths.toLocaleString('pt-BR')}</td>
+                    <td class="number">${taxa}</td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+            
+            // Atualizar estatísticas
+            document.getElementById('mediaCasos').textContent = mediaCasos.toLocaleString('pt-BR');
+            document.getElementById('mediaSuspeitos').textContent = mediaSuspeitos.toLocaleString('pt-BR');
+            document.getElementById('mediaFalecimentos').textContent = mediaFalecimentos.toLocaleString('pt-BR');
+            
+            // Atualizar maior e menor taxa
+            document.getElementById('maiorTaxa').textContent = 
+                `${maiorTaxa.estado}: ${maiorTaxa.taxa.toFixed(2)} casos por falecimento`;
+            document.getElementById('menorTaxa').textContent = 
+                `${menorTaxa.estado}: ${menorTaxa.taxa.toFixed(2)} casos por falecimento`;
+        }
+
+        // Carregar dados quando a página carregar
+        document.addEventListener('DOMContentLoaded', carregarDados);
+    </script>
+</body>
+</html>
