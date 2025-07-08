@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Produtos</title>
+    <style>
+        table {
+            width: 60%;
+            border-collapse: collapse;
+            margin: 20px auto;
+        }
+        th, td {
+            border: 1px solid #333;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .acima-media {
+            background-color: #d1ffd1;
+        }
+        .mais-caro {
+            background-color: #ffcccc; 
+        }
+        .mais-barato {
+            background-color: #ccccff; 
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">Lista de Produtos</h1>
+    <div id="resultado" style="text-align: center;">Carregando...</div>
+
+    <script>
+        function criarPromise() {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    const numero = Math.floor(Math.random() * 100);
+                    console.log("Número gerado:", numero);
+
+                    if (numero % 2 === 0) {
+                        const produtos = [
+                            { id: 1, nome: "Produto A", tipo: "Eletrônico", preco: 120.50 },
+                            { id: 2, nome: "Produto B", tipo: "Vestuário", preco: 80.00 },
+                            { id: 3, nome: "Produto C", tipo: "Alimento", preco: 15.99 },
+                            { id: 4, nome: "Produto D", tipo: "Limpeza", preco: 25.75 },
+                            { id: 5, nome: "Produto E", tipo: "Esporte", preco: 300.00 },
+                            { id: 6, nome: "Produto F", tipo: "Eletrônico", preco: 450.99 },
+                            { id: 7, nome: "Produto G", tipo: "Vestuário", preco: 55.50 },
+                            { id: 8, nome: "Produto H", tipo: "Alimento", preco: 9.90 },
+                            { id: 9, nome: "Produto I", tipo: "Limpeza", preco: 12.30 },
+                            { id: 10, nome: "Produto J", tipo: "Esporte", preco: 199.99 }
+                        ];
+                        resolve(produtos);
+                    } else {
+                        reject({ res: "ERROR", msg: "ERRO NO SISTEMA" });
+                    }
+                }, 4000);
+            });
+        }
+
+        async function consumirPromise() {
+            const div = document.getElementById('resultado');
+
+            try {
+                const produtos = await criarPromise();
+                console.log("Produtos:", produtos);
+
+                const precos = produtos.map(p => p.preco);
+                const media = precos.reduce((a, b) => a + b, 0) / produtos.length;
+                const maisCaro = Math.max(...precos);
+                const maisBarato = Math.min(...precos);
+
+                let tabela = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Tipo</th>
+                                <th>Preço (R$)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                produtos.forEach(produto => {
+                    let classe = "";
+                    if (produto.preco > media) classe = "acima-media";
+                    if (produto.preco === maisCaro) classe = "mais-caro";
+                    if (produto.preco === maisBarato) classe = "mais-barato";
+
+                    tabela += `
+                        <tr class="${classe}">
+                            <td>${produto.id}</td>
+                            <td>${produto.nome}</td>
+                            <td>${produto.tipo}</td>
+                            <td>${produto.preco.toFixed(2)}</td>
+                        </tr>
+                    `;
+                });
+
+                tabela += `
+                        </tbody>
+                    </table>
+                    <p><strong>Média de Preços:</strong> R$ ${media.toFixed(2)}</p>
+                    <p><strong>Mais Caro:</strong> R$ ${maisCaro.toFixed(2)}</p>
+                    <p><strong>Mais Barato:</strong> R$ ${maisBarato.toFixed(2)}</p>
+                `;
+
+                div.innerHTML = tabela;
+            } catch (error) {
+                console.error("Erro:", error);
+                div.innerHTML = `<p style="color: red;">${error.res}: ${error.msg}</p>`;
+            }
+        }
+
+        consumirPromise();
+    </script>
+</body>
+</html>

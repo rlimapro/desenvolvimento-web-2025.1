@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da Memória</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        
+        .game-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .score {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #333;
+        }
+        
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 100px);
+            grid-template-rows: repeat(4, 100px);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .card {
+            width: 100px;
+            height: 100px;
+            background-color: #4CAF50;
+            border: 2px solid #333;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            background-color: #45a049;
+        }
+        
+        .card.revealed {
+            background-color: #fff;
+            cursor: default;
+        }
+        
+        .card.matched {
+            background-color: #ddd;
+            cursor: default;
+        }
+        
+        .reset-btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .reset-btn:hover {
+            background-color: #ff5252;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="score">Pontos: <span id="score">0</span></div>
+        <div class="game-board" id="gameBoard"></div>
+        <button class="reset-btn" onclick="resetGame()">Novo Jogo</button>
+    </div>
+
+    <script>
+        // Símbolos para as cartas (cada um aparece 2 vezes)
+        const symbols = ['🍎', '🍌', '🍊', '🍇', '🍓', '🥝', '🍑', '🍒'];
+        
+        let gameBoard = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let score = 0;
+        let canFlip = true;
+        
+        // Inicializa o jogo
+        function initGame() {
+            // Cria array com pares de símbolos
+            const cards = [...symbols, ...symbols];
+            
+            // Embaralha as cartas
+            for (let i = cards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [cards[i], cards[j]] = [cards[j], cards[i]];
+            }
+            
+            // Cria o tabuleiro
+            const boardElement = document.getElementById('gameBoard');
+            boardElement.innerHTML = '';
+            gameBoard = [];
+            
+            for (let i = 0; i < 16; i++) {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.dataset.index = i;
+                card.dataset.symbol = cards[i];
+                card.addEventListener('click', flipCard);
+                boardElement.appendChild(card);
+                gameBoard.push(card);
+            }
+            
+            // Reset das variáveis
+            flippedCards = [];
+            matchedPairs = 0;
+            score = 0;
+            canFlip = true;
+            updateScore();
+        }
+        
+        // Vira uma carta
+        function flipCard(event) {
+            if (!canFlip) return;
+            
+            const card = event.target;
+            const index = parseInt(card.dataset.index);
+            
+            // Não permite virar carta já revelada ou matched
+            if (card.classList.contains('revealed') || card.classList.contains('matched')) {
+                return;
+            }
+            
+            // Não permite virar a mesma carta duas vezes
+            if (flippedCards.includes(index)) {
+                return;
+            }
+            
+            // Revela a carta
+            card.classList.add('revealed');
+            card.textContent = card.dataset.symbol;
+            flippedCards.push(index);
+            
+            // Verifica se duas cartas foram viradas
+            if (flippedCards.length === 2) {
+                canFlip = false;
+                setTimeout(checkMatch, 1000);
+            }
+        }
+        
+        // Verifica se as cartas são iguais
+        function checkMatch() {
+            const [first, second] = flippedCards;
+            const card1 = gameBoard[first];
+            const card2 = gameBoard[second];
+            
+            if (card1.dataset.symbol === card2.dataset.symbol) {
+                // Cartas iguais - marca ponto e deixa reveladas
+                card1.classList.add('matched');
+                card2.classList.add('matched');
+                card1.classList.remove('revealed');
+                card2.classList.remove('revealed');
+                
+                matchedPairs++;
+                score++;
+                updateScore();
+                
+                // Verifica se o jogo terminou
+                if (matchedPairs === 8) {
+                    setTimeout(() => {
+                        alert('Parabéns! Você completou o jogo!');
+                    }, 500);
+                }
+            } else {
+                // Cartas diferentes - esconde novamente
+                card1.classList.remove('revealed');
+                card2.classList.remove('revealed');
+                card1.textContent = '';
+                card2.textContent = '';
+            }
+            
+            flippedCards = [];
+            canFlip = true;
+        }
+        
+        // Atualiza a pontuação
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+        }
+        
+        // Reinicia o jogo
+        function resetGame() {
+            initGame();
+        }
+        
+        // Inicia o jogo quando a página carrega
+        window.onload = initGame;
+    </script>
+</body>
+</html>
